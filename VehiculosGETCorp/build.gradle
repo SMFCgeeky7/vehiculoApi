@@ -1,4 +1,33 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 plugins {
-alias(libs.plugins.android.application) apply false
+    id 'com.android.application' apply false
+    id 'com.android.library' apply false
+}
+
+// Configure Java toolchain
+subprojects {
+    tasks.withType(JavaCompile).configureEach {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    // Añadir configuración JVM para soportar Java 17
+    tasks.withType(Test).configureEach {
+        jvmArgs += [
+                '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.util=ALL-UNNAMED'
+        ]
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
